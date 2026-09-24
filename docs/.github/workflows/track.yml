@@ -1,0 +1,37 @@
+name: Check fares
+# Runs only when you tap "Check prices now" in the app (or press Run workflow in GitHub).
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "sweep = normal check, probe = save one raw Scrappa response to docs/probe.json"
+        default: sweep
+permissions:
+  contents: write
+concurrency:
+  group: fare-watch
+  cancel-in-progress: false
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: Run tracker
+        env:
+          SCRAPPA_KEY: ${{ secrets.SCRAPPA_KEY }}
+        run: |
+          if [ "${{ inputs.mode }}" = "probe" ]; then python tracker.py --probe; else python tracker.py; fi
+      - name: Save results
+        run: |
+          git config user.name "fare-watch"
+          git config user.email "fare-watch@users.noreply.github.com"
+          git add --all docs
+          if [ -f state.json ]; then git add state.json; fi
+          git diff --cached --quiet && exit 0
+          git commit -m "Fare check $(date -u +%FT%TZ)"
+          git pull --rebase -X theirs || true
+          git push
