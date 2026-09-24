@@ -1,0 +1,40 @@
+# India Fares configuration. Edit on GitHub, commit, and the next check uses it.
+origin: YYZ
+# Chennai, Bengaluru, Mumbai, Kochi, Thiruvananthapuram, Kozhikode
+destinations: [MAA, BLR, BOM, COK, TRV, CCJ]
+
+passengers:
+  adults: 2
+  child_ages: [7, 2]      # both 2-11, so child fares with their own seats
+
+# "any" = every airline. "list" = only the carriers below, on every segment.
+airline_mode: any
+airlines:
+  EY: Etihad
+  EK: Emirates
+  WY: Oman Air
+  LH: Lufthansa
+  BA: British Airways
+  QR: Qatar Airways
+  AC: Air Canada
+exclude_airlines: []       # e.g. [PK, SV]  (any mode only)
+
+depart_window: {start: 2026-11-23, end: 2026-12-07}
+return_window: {start: 2027-01-01, end: 2027-01-14}
+# Each check covers every Nth date across both windows and shifts the grid next time.
+# 3 = 25 date pairs x 6 cities = 150 searches.  4 = 16 pairs = 96.  2 = 56 pairs = 336.
+date_step_days: 3
+
+rules:
+  max_leg_minutes: 2100          # 35 h, each direction
+  one_stop_min_layover: 360      # 6 h
+  two_stop_min_layover: 240      # 4 h each
+  max_stops: 2
+
+search:
+  currency: CAD
+  country: ca
+  options_per_search: 2      # cheapest valid itineraries kept per city/date pair
+  breakdown_top_n: 3         # real adult/child split for the cheapest few (1 credit each)
+  max_calls_per_check: 400   # hard cap to protect your credits
+  parallel: 4                # searches at the same time (keeps a check to ~2-4 minutes)
