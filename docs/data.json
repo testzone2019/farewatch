@@ -1,0 +1,56 @@
+{
+ "updated": null,
+ "runs": 0,
+ "calls_last_run": 0,
+ "origin": "YYZ",
+ "cities": {
+  "MAA": "Chennai",
+  "BLR": "Bengaluru",
+  "BOM": "Mumbai",
+  "COK": "Kochi",
+  "TRV": "Thiruvananthapuram",
+  "CCJ": "Kozhikode"
+ },
+ "passengers": {
+  "adults": 2,
+  "child_ages": [
+   7,
+   2
+  ]
+ },
+ "airline_mode": "any",
+ "excluded": [],
+ "airlines": {
+  "EY": "Etihad",
+  "EK": "Emirates",
+  "WY": "Oman Air",
+  "LH": "Lufthansa",
+  "BA": "British Airways",
+  "QR": "Qatar Airways",
+  "AC": "Air Canada"
+ },
+ "rules": {
+  "max_leg_minutes": 2100,
+  "one_stop_min_layover": 360,
+  "two_stop_min_layover": 240,
+  "max_stops": 2
+ },
+ "windows": {
+  "depart": [
+   "2026-11-23",
+   "2026-12-07"
+  ],
+  "return": [
+   "2027-01-01",
+   "2027-01-14"
+  ]
+ },
+ "lows": {},
+ "history": [],
+ "results": [],
+ "all_time": [],
+ "prev_low": null,
+ "provider": "scrappa",
+ "error": null,
+ "date_step_days": 3
+}
