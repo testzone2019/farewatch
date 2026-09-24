@@ -1,0 +1,15 @@
+{"search_metadata":{"google_flights_url":"https://www.google.com/travel/flights?x"},
+"best_flights":[
+ {"flights":[{"departure_airport":{"id":"YYZ","time":"2026-11-26 21:50"},"arrival_airport":{"id":"DXB","time":"2026-11-27 19:40"},"airline":"Emirates","flight_number":"EK 242","duration":770,"airplane":"Airbus A380"},
+             {"departure_airport":{"id":"DXB","time":"2026-11-28 02:50"},"arrival_airport":{"id":"MAA","time":"2026-11-28 08:15"},"airline":"Emirates","flight_number":"EK 546","duration":235}],
+  "layovers":[{"id":"DXB","name":"Dubai International","duration":430,"overnight":true}],
+  "total_duration":1435,"price":7420,"departure_token":"tok1"},
+ {"flights":[{"departure_airport":{"id":"YYZ","time":"2026-11-26 18:00"},"arrival_airport":{"id":"DOH","time":"2026-11-27 16:00"},"airline":"Qatar Airways","flight_number":"QR 764","duration":780},
+             {"departure_airport":{"id":"DOH","time":"2026-11-27 19:00"},"arrival_airport":{"id":"BLR","time":"2026-11-28 02:00"},"airline":"Qatar Airways","flight_number":"QR 572","duration":270}],
+  "layovers":[{"id":"DOH","name":"Hamad","duration":180}],
+  "total_duration":1230,"price":6900,"departure_token":"tok2"}
+],
+"other_flights":[
+ {"flights":[{"departure_airport":{"id":"YYZ","time":"2026-11-26 20:00"},"arrival_airport":{"id":"BOM","time":"2026-11-27 22:00"},"airline":"Air Canada","flight_number":"AC 46","duration":900}],
+  "layovers":[],"total_duration":900,"price":8100,"departure_token":"tok3"}
+]}
