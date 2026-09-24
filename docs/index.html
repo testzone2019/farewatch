@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16233F">
+<title>India Fares</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F7; --surface:#FFFFFF; --ink:#16233F; --muted:#5A6478; --line:#D6DDE8;
+  --accent:#E08A1E; --accent-ink:#16233F; --drop:#0E7C7B; --rise:#B23A48; --soft:#F6F8FB;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1726; --surface:#18233A; --ink:#E8EDF5; --muted:#9AA6BA; --line:#2A3752;
+  --accent:#F2A541; --accent-ink:#16233F; --drop:#3FB8AE; --rise:#E0707E; --soft:#1D2A44;}}
+:root[data-theme="dark"]{--bg:#0F1726; --surface:#18233A; --ink:#E8EDF5; --muted:#9AA6BA; --line:#2A3752;
+  --accent:#F2A541; --accent-ink:#16233F; --drop:#3FB8AE; --rise:#E0707E; --soft:#1D2A44;}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);-webkit-text-size-adjust:100%}
+main{max-width:560px;margin:0 auto;padding:0 16px 40px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+
+.bar{display:flex;align-items:center;justify-content:space-between;padding:16px 2px 8px}
+.bar h1{font:800 22px/1.1 var(--display);margin:0;letter-spacing:-.01em}
+.bar h1 span{display:block;font:400 13px/1.4 var(--body);color:var(--muted);letter-spacing:0;margin-top:2px}
+.icon-btn{width:44px;height:44px;border-radius:12px;border:0;background:var(--surface);display:grid;place-items:center;cursor:pointer}
+
+/* the check panel is the one bold element */
+.check{background:var(--ink);color:var(--bg);border-radius:22px;padding:18px 18px 16px;margin-top:8px}
+.check .low{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.check .low b{font:800 34px/1 var(--display)}
+.check .low small{font-size:13px;opacity:.75;text-align:right}
+.go{margin-top:14px;width:100%;min-height:58px;border:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);
+  font:800 19px/1 var(--display);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.go[disabled]{opacity:.8;cursor:progress}
+.go .spin{width:18px;height:18px;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;display:none}
+.go.busy .spin{display:block;animation:spin .8s linear infinite}
+@media (prefers-reduced-motion:reduce){.go.busy .spin{animation-duration:2.4s}}
+@keyframes spin{to{transform:rotate(1turn)}}
+.status{margin:10px 2px 0;font-size:14px;opacity:.85;min-height:21px}
+.status.err{color:#FFB4BE;opacity:1}
+
+h2{font:700 17px/1.2 var(--display);margin:24px 4px 10px}
+.fare{background:var(--surface);border-radius:16px;margin-bottom:10px;border:2px solid transparent}
+.fare.hl{border-color:var(--drop)}
+.fare summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center}
+.fare summary::-webkit-details-marker{display:none}
+.rank{grid-row:span 2;width:30px;height:30px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font:800 15px/1 var(--display)}
+.fare .city{font:700 17px/1.25 var(--display)}
+.fare .price{font:800 22px/1.1 var(--display);text-align:right;grid-row:span 2}
+.fare .price span{display:block;font:400 12px/1.3 var(--body);color:var(--muted)}
+.fare .dates{font-size:14px;color:var(--muted)}
+.fare .legs{grid-column:2/-1;margin-top:6px;font-size:14px;display:grid;gap:2px}
+.fare .legs b{display:inline-block;width:40px;color:var(--muted);font-weight:400}
+.badges{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.badge{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:7px}
+.badge.new{background:var(--drop);color:#fff}
+.badge.down{background:color-mix(in srgb,var(--drop) 15%,transparent);color:var(--drop)}
+.badge.up{background:color-mix(in srgb,var(--rise) 15%,transparent);color:var(--rise)}
+
+.detail{padding:0 16px 16px}
+.detail h3{font:700 15px/1.2 var(--display);margin:14px 0 8px}
+.tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line)}
+.tl li{position:relative;padding:0 0 10px 8px;font-size:14px}
+.tl li::before{content:"";position:absolute;left:-21px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--ink)}
+.tl li.lay::before{border-color:var(--accent);background:var(--accent)}
+.tl li.lay{color:var(--muted)}
+.tl .t{font-weight:700}
+.money{width:100%;border-collapse:collapse;font-size:15px}
+.money td{padding:7px 0;border-bottom:1px solid var(--line)}
+.money td:last-child{text-align:right}
+.money tr.total td{border-bottom:0;font-weight:700;font-size:17px;padding-top:10px}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.btn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;padding:8px;color:inherit;border:1.5px solid var(--line);background:none;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.more{width:100%;margin-top:4px}
+.empty{background:var(--surface);border-radius:16px;padding:20px 18px}
+.empty p{margin:0}
+footer{margin-top:26px;font-size:13px;color:var(--muted);padding:0 4px}
+footer p{margin:0 0 6px}
+
+/* tabs */
+main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);
+  padding:6px 12px calc(6px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:14px;text-decoration:none;color:var(--muted);font-size:13px;font-weight:700;min-height:56px;justify-content:center}
+.tabs a[aria-current="page"]{color:var(--ink);background:var(--soft)}
+.tabs svg{width:22px;height:22px}
+.view[hidden]{display:none}
+.intro{font-size:14px;color:var(--muted);margin:0 4px 12px}
+.seen{grid-column:2/-1;font-size:13.5px;margin-top:6px;color:var(--muted)}
+.seen .still{color:var(--drop);font-weight:700}
+.seen .now-up{color:var(--rise);font-weight:700}
+
+dialog{border:0;border-radius:20px;padding:0;width:min(520px,calc(100% - 24px));background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,16,30,.55)}
+.sheet{padding:20px}
+.sheet h2{margin:0 0 4px}
+.sheet p{font-size:14px;color:var(--muted);margin:0 0 14px}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 4px}
+input{width:100%;font:16px var(--body);padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.msg{font-size:14px;margin-top:10px;min-height:20px}
+</style>
+</head>
+<body>
+<main>
+  <header class="bar">
+    <h1>India fares<span id="sub">Toronto to South India, family of 4</span></h1>
+    <button class="icon-btn" id="openSettings" aria-label="Settings">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+
+  <div class="view" id="viewNow">
+  <section class="check" aria-live="polite">
+    <div class="low"><div><small style="display:block;text-align:left">Lowest ever seen</small><b class="num" id="lowest">—</b></div><small id="lowWhen"></small></div>
+    <button class="go" id="go"><span class="spin" aria-hidden="true"></span><span id="goLabel">Check prices now</span></button>
+    <p class="status" id="status"></p>
+  </section>
+
+  <h2 id="topTitle">Top 3 right now</h2>
+  <div id="top"></div>
+  <div id="rest" hidden></div>
+  <button class="btn more" id="moreBtn" hidden></button>
+
+  <footer id="foot"></footer>
+  </div>
+
+  <div class="view" id="viewLows" hidden>
+    <h2>Top 20 all-time lows</h2>
+    <p class="intro" id="lowsIntro">The cheapest itineraries any of your checks has found, each at its lowest price.</p>
+    <div id="lowsList"></div>
+  </div>
+</main>
+
+<nav class="tabs" aria-label="Sections">
+  <a href="#now" id="tabNow" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+    Check now</a>
+  <a href="#lows" id="tabLows">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5l6 6 4-4 8 8"/><path d="M21 10v5h-5"/></svg>
+    All-time lows</a>
+</nav>
+
+<dialog id="settings">
+  <form class="sheet" method="dialog">
+    <h2>Connect to your GitHub repo</h2>
+    <p>The Check button runs the fare search in your repo. The token stays on this phone only.</p>
+    <label for="owner">GitHub username</label>
+    <input id="owner" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. masir">
+    <label for="repo">Repository name</label>
+    <input id="repo" autocomplete="off" autocapitalize="off" spellcheck="false" value="fare-watch">
+    <label for="token">Access token</label>
+    <input id="token" type="password" autocomplete="off" placeholder="github_pat_…">
+    <div class="msg" id="setMsg"></div>
+    <div class="row2">
+      <button class="btn" type="button" id="forget">Forget token</button>
+      <button class="btn primary" type="button" id="save">Save and test</button>
+    </div>
+    <div class="row2" style="margin-top:8px"><button class="btn" value="close" style="grid-column:1/-1">Close</button></div>
+  </form>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const KEY = "fare-watch-settings", CACHE = "fare-watch-last";
+const load = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+let cfg = load(KEY) || {}, data = null, busy = false;
+
+const money = n => "$" + Math.round(n).toLocaleString("en-CA");
+const hm = m => m == null ? "" : `${Math.floor(m / 60)}h${m % 60 ? " " + String(m % 60).padStart(2, "0") + "m" : ""}`;
+const day = iso => new Date(iso + "T12:00:00").toLocaleDateString("en-CA", { weekday: "short", month: "short", day: "numeric" });
+const clock = s => (s || "").split(" ")[1] || s;
+const ago = iso => {
+  if (!iso) return "never";
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m} min ago`;
+  if (m < 1440) return `${Math.round(m / 60)} h ago`;
+  return `${Math.round(m / 1440)} days ago`;
+};
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- GitHub ---------- */
+const gh = (path, opts = {}) => fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}${path}`, {
+  ...opts, headers: { Authorization: `Bearer ${cfg.token}`, Accept: "application/vnd.github+json", ...(opts.headers || {}) }
+});
+const connected = () => cfg.owner && cfg.repo && cfg.token;
+
+async function fetchData() {
+  if (connected()) {
+    const r = await gh(`/contents/docs/data.json?ref=main&t=${Date.now()}`, { headers: { Accept: "application/vnd.github.raw+json" }, cache: "no-store" });
+    if (r.ok) return r.json();
+  }
+  const r = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error("data");
+  return r.json();
+}
+
+function setStatus(text, err = false) { const s = $("#status"); s.textContent = text; s.classList.toggle("err", err); }
+function setBusy(on, label) {
+  busy = on; const b = $("#go");
+  b.disabled = on; b.classList.toggle("busy", on);
+  $("#goLabel").textContent = label || (on ? "Checking…" : "Check prices now");
+}
+
+async function runCheck() {
+  if (busy) return;
+  if (!connected()) { openSettings("Add your repo and token first, then tap Check."); return; }
+  setBusy(true, "Starting check…");
+  const startedAt = Date.now(), before = data && data.updated;
+  try {
+    const r = await gh("/actions/workflows/track.yml/dispatches", {
+      method: "POST", body: JSON.stringify({ ref: "main", inputs: { mode: "sweep" } })
+    });
+    if (r.status === 401 || r.status === 403) throw new Error("GitHub refused the token. Check it has Actions: read and write on this repo.");
+    if (r.status === 404) throw new Error("Workflow not found. Check the username, repo name, and that .github/workflows/track.yml exists.");
+    if (!r.ok) throw new Error(`GitHub returned ${r.status}.`);
+
+    setBusy(true, "Searching fares…");
+    const tick = setInterval(() => {
+      const s = Math.round((Date.now() - startedAt) / 1000);
+      setStatus(`Searching 25 date pairs across all airlines. ${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} elapsed, usually 2 to 4 minutes.`);
+    }, 1000);
+
+    let run = null;
+    try {
+      for (let i = 0; i < 90; i++) {           // up to ~9 minutes
+        await new Promise(res => setTimeout(res, 6000));
+        const rr = await gh(`/actions/workflows/track.yml/runs?event=workflow_dispatch&per_page=3&t=${Date.now()}`);
+        if (!rr.ok) continue;
+        const runs = (await rr.json()).workflow_runs || [];
+        run = runs.find(x => new Date(x.created_at).getTime() >= startedAt - 60000);
+        if (run && run.status === "completed") break;
+      }
+    } finally { clearInterval(tick); }
+
+    if (!run || run.status !== "completed") throw new Error("Still running after 9 minutes. Tap Check again later to load results.");
+    if (run.conclusion !== "success") throw new Error(`The check failed (${run.conclusion}). Open the Actions tab in GitHub for the log.`);
+
+    setBusy(true, "Loading results…");
+    for (let i = 0; i < 10; i++) {
+      const d = await fetchData();
+      if (d.updated && d.updated !== before) { data = d; break; }
+      await new Promise(res => setTimeout(res, 3000));
+    }
+    save(CACHE, data);
+    render();
+    const n = (data.results || []).filter(x => x.new_low || x.drop).length;
+    setStatus(n ? `Done. ${n} option${n > 1 ? "s" : ""} cheaper than before.` : "Done. No drops this time.");
+    if (navigator.vibrate) navigator.vibrate(n ? [60, 60, 60] : 40);
+  } catch (e) {
+    setStatus(e.message || "Couldn't reach GitHub. Check your connection and try again.", true);
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* ---------- render ---------- */
+function legLine(leg) {
+  if (leg.stops === 0) return `Direct, ${hm(leg.minutes)}`;
+  return `${leg.stops} stop${leg.stops > 1 ? "s" : ""} (${leg.layovers.map(l => `${l.airport} ${hm(l.minutes)}`).join(", ")}), ${hm(leg.minutes)}`;
+}
+function timeline(leg) {
+  const out = [];
+  leg.segments.forEach((s, i) => {
+    out.push(`<li><span class="t">${esc(clock(s.depart))}</span> ${esc(s.from)} to ${esc(s.to)}, arrive ${esc(clock(s.arrive))}<br>${esc(s.airline)} ${esc(s.flight)}, ${hm(s.minutes)}</li>`);
+    const l = leg.layovers[i];
+    if (l) out.push(`<li class="lay">Layover in ${esc(l.name || l.airport)}, ${hm(l.minutes)}${l.overnight ? ", overnight" : ""}</li>`);
+  });
+  return `<ul class="tl">${out.join("")}</ul>`;
+}
+function breakdown(it, pax) {
+  const b = it.breakdown, rows = [];
+  for (let i = 0; i < pax.adults; i++) rows.push([`Adult ${i + 1}`, b.adult]);
+  pax.child_ages.forEach(a => rows.push([`Child, age ${a}`, b.child]));
+  const note = b.method === "measured"
+    ? "Adult fare measured on these exact flights; child fare is the rest of the family total."
+    : "Per-person split is an estimate (child at 80% of adult). The family total is the real price.";
+  return `<table class="money num">${rows.map(r => `<tr><td>${r[0]}</td><td>${money(r[1])}</td></tr>`).join("")}
+    <tr class="total"><td>Total</td><td>${money(it.total)}</td></tr></table><p class="note">${note}</p>`;
+}
+function card(it, rank) {
+  const city = data.cities[it.dest] || it.dest, badges = [];
+  if (it.new_low) badges.push(`<span class="badge new">New low, ${money(data.prev_low - it.total)} under previous</span>`);
+  if (it.drop) badges.push(`<span class="badge down">▼ ${money(it.drop)} since last check</span>`);
+  else if (it.prev_total && it.prev_total < it.total) badges.push(`<span class="badge up">▲ ${money(it.total - it.prev_total)} since last check</span>`);
+  return `<details class="fare${it.new_low || it.drop ? " hl" : ""}">
+    <summary>
+      <span class="rank">${rank}</span>
+      <span class="city">${esc(city)}</span>
+      <span class="price num">${money(it.total)}<span>all 4</span></span>
+      <span class="dates">${day(it.depart_date)} to ${day(it.return_date)}</span>
+      <span class="legs"><span>${esc(it.airlines.join(" + "))}</span><span><b>Out</b>${esc(legLine(it.out))}</span><span><b>Back</b>${esc(legLine(it.ret))}</span></span>
+      ${badges.length ? `<span class="badges">${badges.join("")}</span>` : ""}
+    </summary>
+    <div class="detail">
+      <h3>Going, ${day(it.depart_date)}</h3>${timeline(it.out)}
+      <h3>Returning, ${day(it.return_date)}</h3>${timeline(it.ret)}
+      <h3>Price per ticket</h3>${breakdown(it, data.passengers)}
+      <div class="links">
+        ${it.google_url ? `<a class="btn primary" href="${esc(it.google_url)}" target="_blank" rel="noopener">Google Flights</a>` : ""}
+        <a class="btn" href="${esc(it.skyscanner_url)}" target="_blank" rel="noopener">Skyscanner</a>
+      </div>
+    </div>
+  </details>`;
+}
+
+function lowCard(h, rank) {
+  const city = data.cities[h.dest] || h.dest;
+  const inLatest = h.last_seen === data.updated, upBy = h.last_total - h.low_total;
+  let status;
+  if (upBy > 0) status = `<span class="now-up">Up ${money(upBy)} to ${money(h.last_total)}</span> when last seen, ${ago(h.last_seen)}`;
+  else if (inLatest) status = `<span class="still">Still at this price</span> in your latest check`;
+  else status = `Last seen at this price ${ago(h.last_seen)}; those dates weren't in the latest check`;
+  const lowDay = new Date(h.low_at).toLocaleDateString("en-CA", { month: "short", day: "numeric" });
+  return `<details class="fare${upBy <= 0 && inLatest ? " hl" : ""}">
+    <summary>
+      <span class="rank">${rank}</span>
+      <span class="city">${esc(city)}</span>
+      <span class="price num">${money(h.low_total)}<span>lowest</span></span>
+      <span class="dates">${day(h.depart_date)} to ${day(h.return_date)}</span>
+      <span class="legs"><span>${esc(h.airlines.join(" + "))}</span><span><b>Out</b>${esc(legLine(h.out))}</span><span><b>Back</b>${esc(legLine(h.ret))}</span></span>
+      <span class="seen">Lowest found ${lowDay}, seen in ${h.times_seen} check${h.times_seen > 1 ? "s" : ""}.<br>${status}</span>
+    </summary>
+    <div class="detail">
+      <h3>Going, ${day(h.depart_date)}</h3>${timeline(h.out)}
+      <h3>Returning, ${day(h.return_date)}</h3>${timeline(h.ret)}
+      <h3>Price per ticket at its low</h3>${breakdown({ ...h, total: h.low_total }, data.passengers)}
+      <div class="links">
+        ${h.google_url ? `<a class="btn primary" href="${esc(h.google_url)}" target="_blank" rel="noopener">Google Flights</a>` : ""}
+        <a class="btn" href="${esc(h.skyscanner_url)}" target="_blank" rel="noopener">Skyscanner</a>
+      </div>
+      <p class="note">Historic price. Open a link to see today's fare.</p>
+    </div>
+  </details>`;
+}
+
+function renderLows() {
+  const list = (data && data.all_time) || [];
+  $("#lowsList").innerHTML = list.length
+    ? list.map((h, i) => lowCard(h, i + 1)).join("")
+    : `<div class="empty"><p>Your all-time lows appear here after your first check.</p></div>`;
+}
+
+function route() {
+  const lows = location.hash === "#lows";
+  $("#viewNow").hidden = lows; $("#viewLows").hidden = !lows;
+  $("#tabNow").setAttribute("aria-current", lows ? "false" : "page");
+  $("#tabLows").setAttribute("aria-current", lows ? "page" : "false");
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+
+function render() {
+  if (!data) return;
+  renderLows();
+  const res = data.results || [];
+  const low = data.lows && data.lows.ALL;
+  $("#lowest").textContent = low ? money(low.total) : "—";
+  $("#lowWhen").textContent = data.updated ? `Last check ${ago(data.updated)}` : "No checks yet";
+  $("#top").innerHTML = res.length
+    ? res.slice(0, 3).map((r, i) => card(r, i + 1)).join("")
+    : `<div class="empty"><p>${data.updated ? "No itineraries met your rules on the last check." : "Tap Check prices now to run the first search."}</p></div>`;
+  const rest = res.slice(3);
+  $("#rest").innerHTML = rest.map((r, i) => card(r, i + 4)).join("");
+  $("#moreBtn").hidden = !rest.length;
+  $("#moreBtn").textContent = $("#rest").hidden ? `Show ${rest.length} more options` : "Show top 3 only";
+  const r = data.rules;
+  $("#foot").innerHTML = `<p>${data.airline_mode === "list" ? "Airlines: " + esc(Object.values(data.airlines).join(", ")) : "All airlines"}. Leave ${day(data.windows.depart[0])} to ${day(data.windows.depart[1])}, return ${day(data.windows.return[0])} to ${day(data.windows.return[1])}.</p>
+    <p>Direct, 1 stop with ${r.one_stop_min_layover / 60}h+ layover, or 2 stops with ${r.two_stop_min_layover / 60}h+ each. Max ${r.max_leg_minutes / 60}h each way. Self-transfers skipped.</p>
+    <p>Each check covers every 3rd date and shifts the grid next time.${data.calls_last_run ? ` Last check used ${data.calls_last_run} searches.` : ""}</p>`;
+}
+
+/* ---------- settings ---------- */
+function openSettings(msg) {
+  $("#owner").value = cfg.owner || ""; $("#repo").value = cfg.repo || "fare-watch"; $("#token").value = cfg.token || "";
+  $("#setMsg").textContent = msg || ""; $("#settings").showModal();
+}
+$("#openSettings").onclick = () => openSettings();
+$("#save").onclick = async () => {
+  cfg = { owner: $("#owner").value.trim(), repo: $("#repo").value.trim(), token: $("#token").value.trim() };
+  $("#setMsg").textContent = "Testing…";
+  try {
+    const r = await gh("/actions/workflows/track.yml");
+    if (!r.ok) throw new Error(r.status === 404 ? "Repo or workflow not found." : `GitHub said ${r.status}. Check the token.`);
+    save(KEY, cfg);
+    $("#setMsg").textContent = "Connected. You can close this and tap Check.";
+  } catch (e) { $("#setMsg").textContent = e.message || "Couldn't reach GitHub."; }
+};
+$("#forget").onclick = () => { cfg = {}; save(KEY, cfg); $("#token").value = ""; $("#setMsg").textContent = "Token removed from this phone."; };
+$("#go").onclick = runCheck;
+$("#moreBtn").onclick = () => { $("#rest").hidden = !$("#rest").hidden; render(); };
+
+/* ---------- start ---------- */
+data = load(CACHE);
+route();
+render();
+fetchData().then(d => { if (!data || d.updated !== data.updated) { data = d; save(CACHE, d); render(); } })
+  .catch(() => { if (!data) setStatus("Couldn't load saved results. Tap Check to search.", true); });
+if (new URLSearchParams(location.search).get("check") === "1") {
+  history.replaceState(null, "", location.pathname);
+  setTimeout(runCheck, 300);
+}
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+setInterval(() => data && ($("#lowWhen").textContent = `Last check ${ago(data.updated)}`), 60000);
+</script>
+</body>
+</html>
